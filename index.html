@@ -5,368 +5,215 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="iK Płatności" />
+<meta name="apple-mobile-web-app-title" content="IKR Finanse" />
 <meta name="theme-color" content="#c0272d" />
-<title>iKropka · Płatności</title>
+<title>IKR Finanse</title>
 <link rel="manifest" href="manifest.json" />
 <link rel="apple-touch-icon" href="icon-192.png" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
-<noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red: #c0272d; --red-dark: #9a1e23; --red-light: #f9e9ea;
+  --red-mid: #e8b0b2; --dark: #1a1a1a; --gray-bg: #f4f4f2;
+  --border: #e2e2de; --text: #2c2c2a; --muted: #7a7a76;
+  --white: #ffffff; --radius: 10px;
+}
+html { height: 100%; }
+body { font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif; background: #f0efec; color: var(--text); min-height: 100%; padding-bottom: env(safe-area-inset-bottom); }
 
-  :root {
-    --red: #c0272d;
-    --red-dark: #9a1e23;
-    --red-light: #f9e9ea;
-    --red-mid: #e8b0b2;
-    --dark: #1a1a1a;
-    --gray-bg: #f4f4f2;
-    --border: #e2e2de;
-    --text: #2c2c2a;
-    --muted: #7a7a76;
-    --white: #ffffff;
-    --radius: 10px;
-    --radius-sm: 6px;
-  }
+/* TOPBAR */
+.topbar { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 2px solid var(--red); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; padding-top: max(10px, env(safe-area-inset-top)); }
+.logo-wrap { display: flex; align-items: center; gap: 9px; }
+.logo-dot { width: 26px; height: 26px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.logo-dot span { color: #fff; font-weight: 700; font-size: 11px; letter-spacing: -0.5px; }
+.logo-name { font-size: 14px; font-weight: 700; color: var(--dark); }
+.logo-name em { color: var(--red); font-style: normal; }
+.logo-sub { font-weight: 400; color: var(--muted); }
 
-  html { height: 100%; }
-  body {
-    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f0efec;
-    color: var(--text);
-    min-height: 100%;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+/* SAVE BUTTON */
+.save-btn { font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: var(--red); color: #fff; border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background 0.15s, opacity 0.15s; opacity: 0; pointer-events: none; white-space: nowrap; }
+.save-btn.dirty { opacity: 1; pointer-events: auto; }
+.save-btn:hover { background: var(--red-dark); }
+.save-btn.saved { background: #3a9e6e; opacity: 1; pointer-events: none; }
 
-  /* TOPBAR */
-  .topbar {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--white);
-    border-bottom: 2px solid var(--red);
-    padding: 10px 16px;
-    display: flex; align-items: center; justify-content: space-between;
-    padding-top: max(10px, env(safe-area-inset-top));
-  }
-  .logo-wrap { display: flex; align-items: center; gap: 9px; }
-  .logo-dot {
-    width: 26px; height: 26px;
-    background: var(--red); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .logo-dot span { color: #fff; font-weight: 700; font-size: 11px; letter-spacing: -0.5px; }
-  .logo-name { font-size: 14px; font-weight: 700; color: var(--dark); }
-  .logo-name em { color: var(--red); font-style: normal; }
-  .logo-sub { font-weight: 400; color: var(--muted); }
-  .sync-status {
-    font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--muted); display: flex; align-items: center; gap: 5px;
-  }
-  .sync-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: #ccc; transition: background 0.3s;
-  }
-  .sync-dot.ok { background: #3a9e6e; }
-  .sync-dot.saving { background: #e8a020; }
-  .sync-dot.error { background: var(--red); }
+/* UNDO/REDO */
+.undo-wrap { display: flex; align-items: center; gap: 4px; }
+.undo-btn { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--muted); padding: 4px 7px; font-size: 14px; line-height: 1; transition: all 0.15s; display: flex; align-items: center; }
+.undo-btn:hover:not(:disabled) { border-color: var(--red-mid); color: var(--red); background: var(--red-light); }
+.undo-btn:disabled { opacity: 0.3; cursor: default; }
+.undo-counter { font-size: 10px; font-weight: 600; color: var(--muted); letter-spacing: 0.06em; min-width: 20px; text-align: center; }
 
-  /* MAIN LAYOUT */
-  .page { max-width: 600px; margin: 0 auto; padding: 16px 16px 80px; }
+/* SYNC */
+.sync-status { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; transition: background 0.3s; }
+.sync-dot.ok { background: #3a9e6e; }
+.sync-dot.saving { background: #e8a020; }
+.sync-dot.error { background: var(--red); }
 
-  /* HEADER CARD */
-  .header-card {
-    background: var(--white);
-    border: 0.5px solid var(--border);
-    border-top: 3px solid var(--red);
-    border-radius: 0 0 var(--radius) var(--radius);
-    padding: 16px 18px;
-    margin-bottom: 12px;
-  }
-  .konto-label {
-    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
-  }
-  .rezerwa-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: var(--red-light); color: var(--red-dark);
-    font-size: 11px; font-weight: 600;
-    padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;
-  }
-  .kwota-main-wrap { display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px; }
-  .kwota-main { font-size: 40px; font-weight: 700; color: var(--dark); letter-spacing: -0.03em; line-height: 1; }
-  .kwota-currency { font-size: 16px; font-weight: 600; color: var(--red); }
-  .kwota-eq { font-size: 11px; color: var(--muted); margin-bottom: 14px; }
+/* LAYOUT */
+.page { max-width: 600px; margin: 0 auto; padding: 16px 16px 80px; }
 
-  /* SUB ROWS */
-  .sub-amounts { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
-  .sub-row {
-    display: flex; align-items: center;
-    background: var(--gray-bg);
-    border-radius: 7px;
-    border-left: 3px solid var(--red-mid);
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-  .sub-row:first-child { border-left-color: var(--red); }
-  .sub-row:focus-within { border-left-color: var(--red); }
-  .sub-amount-col {
-    display: flex; align-items: center;
-    padding: 9px 11px;
-    border-right: 0.5px solid var(--border);
-    min-width: 105px;
-  }
-  .sub-text-col {
-    display: flex; align-items: center;
-    padding: 9px 12px; flex: 1;
-  }
-  .sub-del-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--red-mid); padding: 9px 10px;
-    font-size: 16px; line-height: 1;
-    transition: color 0.15s;
-    flex-shrink: 0;
-  }
-  .sub-del-btn:hover { color: var(--red); }
+/* HEADER CARD */
+.header-card { background: var(--white); border: 0.5px solid var(--border); border-top: 3px solid var(--red); border-radius: 0 0 var(--radius) var(--radius); padding: 16px 18px; margin-bottom: 12px; }
+.konto-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.rezerwa-badge { display: inline-flex; align-items: center; background: var(--red-light); color: var(--red-dark); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+.kwota-main-wrap { display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px; }
+.kwota-main { font-size: 40px; font-weight: 700; color: var(--dark); letter-spacing: -0.03em; line-height: 1; }
+.kwota-currency { font-size: 16px; font-weight: 600; color: var(--red); }
+.kwota-eq { font-size: 11px; color: var(--muted); margin-bottom: 14px; }
 
-  /* INPUTS */
-  input[type="text"], input[type="number"] {
-    font-family: inherit;
-    background: transparent; border: none;
-    border-bottom: 1px solid transparent;
-    color: var(--text); padding: 0 2px; width: 100%;
-    -webkit-appearance: none;
-  }
-  input[type="text"]:focus, input[type="number"]:focus { outline: none; border-bottom-color: var(--red); }
-  input[type="text"]:hover, input[type="number"]:hover { border-bottom-color: var(--red-mid); }
-  .amount-input { font-size: 15px; font-weight: 700; }
-  .note-input { font-size: 12px; color: var(--muted); }
-  .note-input::placeholder { color: #bbb; }
+/* SUB ROWS */
+.sub-amounts { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.sub-row { display: flex; align-items: center; background: var(--gray-bg); border-radius: 7px; border-left: 3px solid var(--red-mid); overflow: hidden; transition: border-color 0.2s; }
+.sub-row:first-child { border-left-color: var(--red); }
+.sub-row:focus-within { border-left-color: var(--red); }
+.sub-amount-col { display: flex; align-items: center; padding: 9px 11px; border-right: 0.5px solid var(--border); min-width: 105px; }
+.sub-text-col { display: flex; align-items: center; padding: 9px 12px; flex: 1; }
+.sub-del-btn { background: none; border: none; cursor: pointer; color: var(--red-mid); padding: 9px 10px; font-size: 16px; line-height: 1; transition: color 0.15s; flex-shrink: 0; }
+.sub-del-btn:hover { color: var(--red); }
 
-  .add-btn {
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    font-family: inherit; font-size: 12px; font-weight: 500;
-    color: var(--red); background: none;
-    border: 1px dashed var(--red-mid); border-radius: 7px;
-    padding: 8px 12px; cursor: pointer; width: 100%;
-    transition: background 0.15s;
-  }
-  .add-btn:hover, .add-btn:active { background: var(--red-light); }
+/* INPUTS */
+input[type="text"] { font-family: inherit; background: transparent; border: none; border-bottom: 1px solid transparent; color: var(--text); padding: 0 2px; width: 100%; -webkit-appearance: none; }
+input[type="text"]:focus { outline: none; border-bottom-color: var(--red); }
+input[type="text"]:hover { border-bottom-color: var(--red-mid); }
+.amount-input { font-size: 15px; font-weight: 700; }
+.note-input { font-size: 12px; color: var(--muted); }
+.note-input::placeholder { color: #bbb; }
 
-  /* MONTHS NAV */
-  .months-nav {
-    display: flex; gap: 5px; flex-wrap: wrap;
-    margin-bottom: 12px; align-items: center;
-  }
-  .month-btn {
-    font-family: inherit;
-    padding: 6px 12px; font-size: 11px; font-weight: 600;
-    letter-spacing: 0.06em; text-transform: uppercase;
-    border: 1px solid var(--border); border-radius: 20px;
-    background: var(--white); color: var(--muted); cursor: pointer;
-    display: flex; align-items: center; gap: 4px;
-    transition: all 0.15s; user-select: none; -webkit-user-select: none;
-    touch-action: manipulation;
-  }
-  .month-btn:hover { border-color: var(--red-mid); color: var(--red); background: var(--red-light); }
-  .month-btn.active { background: var(--red); color: #fff; border-color: var(--red); }
-  .month-btn.biezace { background: var(--dark); color: #fff; border-color: var(--dark); cursor: default; font-size: 10px; }
-  .month-btn.biezace:hover { background: var(--dark); color: #fff; }
-  .drag-icon { opacity: 0.35; font-size: 11px; cursor: grab; }
+.add-btn { display: flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-size: 12px; font-weight: 500; color: var(--red); background: none; border: 1px dashed var(--red-mid); border-radius: 7px; padding: 8px 12px; cursor: pointer; width: 100%; transition: background 0.15s; }
+.add-btn:hover { background: var(--red-light); }
 
-  /* MONTH CONTENT */
-  .month-content {
-    background: var(--white);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .month-header {
-    background: var(--dark); color: #fff;
-    padding: 10px 18px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .month-header h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
-  .month-badge { font-size: 10px; background: var(--red); color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-  .month-body { padding: 14px 18px; }
+/* MONTHS NAV */
+.months-nav { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+.month-btn { font-family: inherit; padding: 6px 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--border); border-radius: 20px; background: var(--white); color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+.month-btn:hover { border-color: var(--red-mid); color: var(--red); background: var(--red-light); }
+.month-btn.active { background: var(--red); color: #fff; border-color: var(--red); }
+.month-btn.biezace { background: var(--dark); color: #fff; border-color: var(--dark); font-size: 10px; }
+.month-btn.biezace:hover { background: var(--dark); color: #fff; }
+.drag-icon { opacity: 0.35; font-size: 11px; }
+.month-btn-wrap { position: relative; display: inline-flex; align-items: center; }
+.month-actions { display: none; position: absolute; top: -2px; right: -2px; flex-direction: row; gap: 2px; z-index: 10; }
+.month-btn-wrap:hover .month-actions { display: flex; }
+.month-action-btn { width: 18px; height: 18px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; line-height: 1; }
+.month-edit-btn { background: var(--dark); color: #fff; }
+.month-edit-btn:hover { background: #444; }
+.month-del-btn { background: var(--red); color: #fff; }
+.month-del-btn:hover { background: var(--red-dark); }
+.month-add-btn { font-family: inherit; padding: 6px 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; border: 1px dashed var(--red-mid); border-radius: 20px; background: none; color: var(--red); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s; }
+.month-add-btn:hover { background: var(--red-light); }
 
-  .section { margin-bottom: 16px; }
-  .section-title {
-    font-size: 10px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.1em; color: var(--red);
-    padding-bottom: 5px; border-bottom: 1px solid var(--red-light);
-    margin-bottom: 6px;
-  }
-  .item-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 5px 3px; border-bottom: 0.5px solid var(--border);
-    font-size: 13px; gap: 8px;
-  }
-  .item-row:last-child { border-bottom: none; }
-  .item-name { color: var(--muted); flex: 1; min-width: 0; }
-  .item-name.bold { color: var(--text); font-weight: 600; }
-  .item-amount { font-weight: 600; color: var(--text); white-space: nowrap; }
-  .item-name input { color: var(--muted); font-size: 13px; }
-  .item-name.bold input { color: var(--text); font-weight: 600; }
-  .item-amount input { font-size: 13px; font-weight: 600; text-align: right; width: 120px; }
-  .row-del-btn {
-    background: none; border: none; cursor: pointer;
-    color: transparent; font-size: 15px; line-height: 1;
-    padding: 2px 4px; flex-shrink: 0;
-    transition: color 0.15s; border-radius: 4px;
-  }
-  .item-row:hover .row-del-btn { color: var(--red-mid); }
-  .row-del-btn:hover { color: var(--red) !important; background: var(--red-light); }
+/* MONTH EDIT MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 500; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--white); border-radius: var(--radius); padding: 20px; min-width: 260px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+.modal h4 { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dark); margin-bottom: 12px; }
+.modal input { font-family: inherit; font-size: 14px; font-weight: 600; width: 100%; border: 1.5px solid var(--border); border-radius: 7px; padding: 8px 10px; color: var(--text); margin-bottom: 12px; }
+.modal input:focus { outline: none; border-color: var(--red); }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.modal-cancel { font-family: inherit; font-size: 12px; font-weight: 600; background: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; cursor: pointer; color: var(--muted); }
+.modal-ok { font-family: inherit; font-size: 12px; font-weight: 700; background: var(--red); border: none; border-radius: 6px; padding: 6px 14px; cursor: pointer; color: #fff; }
+.modal-ok:hover { background: var(--red-dark); }
 
-  .regis-bar {
-    display: flex; justify-content: space-between; align-items: center;
-    background: var(--gray-bg); border-radius: 7px;
-    padding: 8px 13px; margin-top: 6px;
-    border-left: 3px solid var(--red);
-  }
-  .regis-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); }
-  .regis-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-  .regis-val input { font-size: 14px; font-weight: 700; text-align: right; width: 140px; color: var(--text); }
+/* BIEŻĄCE PANEL */
+.biezace-panel { margin-bottom: 12px; }
+.biezace-item-row { display: flex; align-items: center; gap: 6px; padding: 5px 3px; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+.biezace-item-row:last-child { border-bottom: none; }
+.biezace-name-input { flex: 1; color: var(--muted); font-size: 13px; }
+.biezace-amount-input { font-size: 13px; font-weight: 600; text-align: right; width: 110px; color: var(--text); }
+.biezace-del { background: none; border: none; cursor: pointer; color: var(--red-mid); font-size: 15px; line-height: 1; padding: 2px 4px; flex-shrink: 0; transition: color 0.15s; }
+.biezace-del:hover { color: var(--red); }
+.biezace-zost { margin-top: 12px; background: var(--dark); border-radius: 7px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.biezace-zost-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red-mid); }
+.biezace-zost-desc { font-size: 10px; color: #888; margin-top: 2px; }
+.biezace-zost-value { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+.biezace-zost-value.negative { color: #f87171; }
 
-  /* LOADING */
-  .loading-screen {
-    position: fixed; inset: 0;
-    background: var(--white);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 16px; z-index: 999;
-    transition: opacity 0.4s;
-  }
-  .loading-screen.hidden { opacity: 0; pointer-events: none; }
-  .loading-logo {
-    width: 50px; height: 50px; background: var(--red); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    animation: pulse 1.2s ease-in-out infinite;
-  }
-  .loading-logo span { color: #fff; font-weight: 700; font-size: 18px; letter-spacing: -1px; }
-  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-  .loading-text { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+/* MONTH CONTENT */
+.month-content { background: var(--white); border: 0.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.month-header { background: var(--dark); color: #fff; padding: 10px 18px; display: flex; align-items: center; justify-content: space-between; }
+.month-header h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.month-badge { font-size: 10px; background: var(--red); color: #fff; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+.month-body { padding: 14px 18px; }
+.section { margin-bottom: 16px; }
+.section-title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; padding-bottom: 5px; border-bottom: 1px solid var(--red-light); }
+.section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--red); white-space: nowrap; }
+.section-del-btn { background: none; border: none; cursor: pointer; color: transparent; font-size: 14px; padding: 0 4px; transition: color 0.15s; flex-shrink: 0; margin-bottom: 5px; }
+.section:hover .section-del-btn { color: var(--red-mid); }
+.section-del-btn:hover { color: var(--red) !important; }
+.subsec-input { font-family: inherit; font-size: 11px; font-weight: 700; color: var(--dark); background: transparent; border: none; border-bottom: 1.5px solid var(--border); padding: 2px 4px; flex: 1; min-width: 0; }
+.subsec-input:focus { outline: none; border-bottom-color: var(--red); }
+.subsec-input:hover { border-bottom-color: var(--red-mid); }
+.subsec-input::placeholder { color: #ccc; font-weight: 400; font-style: italic; }
+.section-sum-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; margin-top: 4px; border-top: 1.5px solid var(--dark); }
+.section-sum-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dark); }
+.section-sum-value { font-size: 14px; font-weight: 700; color: var(--dark); }
+.add-item-btn { display: flex; align-items: center; gap: 5px; font-family: inherit; font-size: 11px; font-weight: 500; color: var(--muted); background: none; border: none; cursor: pointer; padding: 5px 3px; margin-top: 2px; transition: color 0.15s; }
+.add-item-btn:hover { color: var(--red); }
+.add-section-wrap { margin: 12px 0 8px; }
+.add-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.add-section-presets { display: flex; flex-wrap: wrap; gap: 5px; }
+.preset-btn { font-family: inherit; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 10px; border: 1px solid var(--border); border-radius: 20px; background: var(--white); color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.preset-btn:hover { border-color: var(--red-mid); color: var(--red); background: var(--red-light); }
+.preset-custom { border-style: dashed; }
+.item-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 3px; border-bottom: 0.5px solid var(--border); font-size: 13px; gap: 8px; }
+.item-row:last-child { border-bottom: none; }
+.item-name { color: var(--muted); flex: 1; min-width: 0; }
+.item-name.bold { color: var(--text); font-weight: 600; }
+.item-amount { font-weight: 600; color: var(--text); white-space: nowrap; }
+.item-name input { color: var(--muted); font-size: 13px; }
+.item-name.bold input { color: var(--text); font-weight: 600; }
+.item-amount input { font-size: 13px; font-weight: 600; text-align: right; width: 120px; }
+.row-del-btn { background: none; border: none; cursor: pointer; color: transparent; font-size: 15px; line-height: 1; padding: 2px 4px; flex-shrink: 0; transition: color 0.15s; border-radius: 4px; }
+.item-row:hover .row-del-btn { color: var(--red-mid); }
+.row-del-btn:hover { color: var(--red) !important; background: var(--red-light); }
+.regis-bar { display: flex; justify-content: space-between; align-items: center; background: var(--gray-bg); border-radius: 7px; padding: 8px 13px; margin-top: 6px; border-left: 3px solid var(--red); }
+.regis-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); }
+.regis-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.regis-val input { font-size: 14px; font-weight: 700; text-align: right; width: 140px; color: var(--text); }
 
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--dark); color: #fff;
-    font-size: 12px; font-weight: 500;
-    padding: 10px 18px; border-radius: 20px;
-    transition: transform 0.3s; z-index: 200; white-space: nowrap;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
+/* LOADING */
+.loading-screen { position: fixed; inset: 0; background: var(--white); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 999; transition: opacity 0.4s; }
+.loading-screen.hidden { opacity: 0; pointer-events: none; }
+.loading-logo { width: 50px; height: 50px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulse 1.2s ease-in-out infinite; }
+.loading-logo span { color: #fff; font-weight: 700; font-size: 18px; letter-spacing: -1px; }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.loading-text { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
 
-  /* BIEŻĄCE PANEL */
-  .biezace-panel { margin-bottom: 12px; }
-  .biezace-item-row {
-    display: flex; align-items: center;
-    gap: 6px; padding: 5px 3px;
-    border-bottom: 0.5px solid var(--border);
-    font-size: 13px;
-  }
-  .biezace-item-row:last-child { border-bottom: none; }
-  .biezace-name-input {
-    flex: 1; color: var(--muted); font-size: 13px;
-    font-family: inherit;
-    background: transparent; border: none;
-    border-bottom: 1px solid transparent; padding: 0 2px; width: 100%;
-  }
-  .biezace-amount-input {
-    font-size: 13px; font-weight: 600; text-align: right; width: 110px; color: var(--text);
-    font-family: inherit;
-    background: transparent; border: none;
-    border-bottom: 1px solid transparent; padding: 0 2px;
-  }
-  .biezace-name-input:hover, .biezace-amount-input:hover { border-bottom-color: var(--red-mid); }
-  .biezace-name-input:focus, .biezace-amount-input:focus { outline: none; border-bottom-color: var(--red); }
-  .biezace-del {
-    background: none; border: none; cursor: pointer;
-    color: var(--red-mid); font-size: 15px; line-height: 1;
-    padding: 2px 4px; flex-shrink: 0; transition: color 0.15s;
-  }
-  .biezace-del:hover { color: var(--red); }
-  .biezace-zost {
-    margin-top: 12px;
-    background: var(--dark);
-    border-radius: 7px;
-    padding: 10px 14px;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 8px;
-  }
-  .biezace-zost-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--red-mid);
-  }
-  .biezace-zost-desc {
-    font-size: 10px; color: #888; margin-top: 2px;
-  }
-  .biezace-zost-value {
-    font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.02em;
-  }
-  .biezace-zost-value.negative { color: #f87171; }
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--dark); color: #fff; font-size: 12px; font-weight: 500; padding: 10px 18px; border-radius: 20px; transition: transform 0.3s; z-index: 200; white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* SAVE BUTTON */
-  .save-btn {
-    font-family: inherit;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    background: var(--red); color: #fff;
-    border: none; border-radius: 6px;
-    padding: 6px 14px; cursor: pointer;
-    display: flex; align-items: center; gap: 5px;
-    transition: background 0.15s, opacity 0.15s;
-    opacity: 0; pointer-events: none;
-    white-space: nowrap;
-  }
-  .save-btn.dirty { opacity: 1; pointer-events: auto; }
-  .save-btn:hover { background: var(--red-dark); }
-  .save-btn.saved { background: #3a9e6e; opacity: 1; pointer-events: none; }
-
-  /* UNDO/REDO */
-  .undo-wrap { display: flex; align-items: center; gap: 4px; }
-  .undo-btn {
-    background: none; border: 1px solid var(--border);
-    border-radius: 6px; cursor: pointer;
-    color: var(--muted); padding: 4px 7px;
-    font-size: 14px; line-height: 1;
-    transition: all 0.15s; display: flex; align-items: center;
-    font-family: inherit;
-  }
-  .undo-btn:hover:not(:disabled) { border-color: var(--red-mid); color: var(--red); background: var(--red-light); }
-  .undo-btn:disabled { opacity: 0.3; cursor: default; }
-  .undo-counter {
-    font-size: 10px; font-weight: 600; color: var(--muted);
-    letter-spacing: 0.06em; min-width: 20px; text-align: center;
-  }
-
-  /* MOBILE tweaks */
-  @media (max-width: 480px) {
-    .page { padding: 12px 12px 80px; }
-    .kwota-main { font-size: 34px; }
-    .month-btn { padding: 5px 10px; font-size: 10px; }
-  }
+@media (max-width: 480px) {
+  .page { padding: 12px 12px 80px; }
+  .kwota-main { font-size: 34px; }
+  .month-btn { padding: 5px 10px; font-size: 10px; }
+}
 </style>
 </head>
 <body>
 
-<!-- Loading -->
+<div class="modal-overlay" id="monthModal">
+  <div class="modal">
+    <h4 id="modalTitle">Edytuj miesiąc</h4>
+    <input type="text" id="modalInput" placeholder="Nazwa miesiąca" />
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Anuluj</button>
+      <button class="modal-ok" onclick="confirmModal()">OK</button>
+    </div>
+  </div>
+</div>
+
 <div class="loading-screen" id="loading">
   <div class="loading-logo"><span>iK</span></div>
   <div class="loading-text">Ładowanie…</div>
 </div>
-
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Topbar -->
 <div class="topbar">
   <div class="logo-wrap">
     <div class="logo-dot"><span>iK</span></div>
-    <div class="logo-name"><em>i</em>Kropka <span class="logo-sub">· Płatności</span></div>
-  </div>UklGRnAHAABXRUJQVlA4IGQHAACQPACdASp1AXAAPlEmjkWjoiER6m50OAUEsrduuoA06ZJ/DfjN+QHUZbneF/yAy9bkv/XfdV7lv8Z7E/MA/Tz/VegB6gPMB+s3+q9pT+u+oD/Cfrd7gH9l/xvWAegB+snpb/9f/UfB9+zn7Q+z7/49Yt9P+nS/Q4KqfHT/nPDXUVtVF3MJ69XhnOc5znOc5znORc1PBugHLDCPZm/4zCnG2kQomeNJsssFJDlqYjRapzEn8njoSPeHoHpgD6/0uc+NNtdf4Ua/Vtq7rpP55t1QLaM2yjROF7+j/ZH+G30c18shky2npwV804A32CFPp8f1PCnagdCg2zDKwLmEwBwaW41a1LisdUmdCpfCNEAiA31yq9+NndtugqXngGxwlqR3pZ/G9zhGPz7diM+OjmlB4c2plvua0KppMtww+UKZW4OlTyJOTosroLukEdHv8bpwHRikkGncloPnTk7Dvva9LYb/e7TvY/67zsltCZp2zeZVC5Rw/ZigURGCb3WApCWzRDLXgLtGtHNFM9RsbmKcIWyL3BaEMVTxkNK621zdtXvaAitv0nUGOzkLBPrsLU7wFu//k2YCxNXzyVT+d7zwkviwyNIv+N8drliQ0GSE72wG7s84oVuVbTIs4hE+Y4wgQGzCevV65kB5BDgAAP7+BtAAADlUQpEYSgp3UTrZyzLN5gz8Z3RjVO0HnjGFjnXE/RyfH5EBf3vStXSa1DLfb6SD/hlCYuiyAW8JhgzXPec47QlCRtGyI4PkkX+3T//iW98MynxdqtiKYzwFnYIdqqDfPld5iRkcF8g0sLx04lLz6xFdCR3SK61kBfKLd8eVvBPaFvbX+354BMYJ45jGwGFwX77zgCsulh99iWhQadMH/3riEXOkubesuiFen0HfQWCN6U6JljGrPkg41DI4EyiU85C5dv88THxGXUxdnSA6Wrc2m0rajaolhqB3Netdmsa7H4xUV1amdHRWVEEWjGKOj62F7RspwodhShZGg6pB94WS6vpX205/R707vSfPontWicbKCcJnWa+8kt4xOC5vOk9cNFPOAHDn9cgVEW7c/uYsrjyuGPz4w7XyP/wZuH/EK/ALUOgBFhMC275EUfnfA95zC287XxMXMLItfJdPv9W0ioJwfsgGvwf/Z/hrb3gq3DZryX00Gx6YgRKaCf9Byvo378NTcVDAzr425KIm3zD4NfmuEpm010MEAGTmaXtVFSU19frU26ZPBlFOa82Jxk1WgWfgi1fYXX21LGxeVR4Dvv9dwtiFYq13qwdpOcTq7Kd0GcUC4HuHaIXzCpQh49Zn5jIZfz0rt5xmFaSKp3JwUx4CJBJJosuJcVFKDxtzoluzj0MIM0cLP2tD/X4Ma4JH8m4ihh0e0VlHFM4BmLCCLKbWGyrrfnca2frbKTe3UhOzGuO51g17W6/osy+FFXxI8f5lk8HY1e2238MaPdHfX9II0U3HgYFim4IGcd9bieOEhcc0wqn7+9djrihZUHFjmdWtXaIbkxa2M0HVFTWPI2b/k226DRF3V130gtGqRfVuC6wTCWg8EgdjO6DlXvjHFQbNnfh/ifP4HxDvjtg1/6LE/9j4liIUcOuSLff/m2gKIjZGVc6y5yEITyjpP8e64/ljFQVNZsZy/+L3C3aI02lE8aMJqna/oU4bbEgraFa2Awi7LH9m6xwjbmFhxApgwfxoNmPwWcRfbYPnAn8XPhN/XF5AT9YrpJfW796QN+9ttZx/F1nN/IiHcg6oP+i+ifqB11dDDT2uF8360+14YvWPwobqV22cLd1oO+Lt1I6D5kbpKT+3cx4e4VwKaL3591nUyrxB09ORxZ5/w0BII+5yrVe2dqTpHjJvuZMckb0xkR7zezpLLfvZJ9gXHCoOcWvaX8o5aBdAAFGnBy5xtG7vvdY+nucycRf92Trsdz3mHBowJTX//hrQ54vWxoI9cOGR06RVlSQw7jGPUhBdAhQtgeI+oWE6SFa6Rr4SLCBILxmMFfIlCuP7YpOQNsqGEJP1Kl5BX5HYB0wAbSvf5ltvBx0S4aPhAVqs/X/mkqPlAtO52dWnwxXlQ3ylr7P9z/jN7PaJMZjyHb6oYah4VT/kn1sWiTGX3BU7jn9rbdQfuBE2JQFiGvTath1k2k+qV+4KQNFSLfe9nZzj50OJg2kZmAmkPEA5vNyakZmF2TTUfEXPdS3xVQfVDOBJ2w5Hnbg6u6HRqwC7gNqUi2fu+pSGP1/e72vEIczVqG+/yJt5ODbok7mNx+snIh+2xOX9oRNyMLK5cvEeJqQ0pLJZOahFTRoRsavbvv53QffJ6lcpUH97YZlxJPOswd4huWFOcsTBTjMdbxy7+3FTcsJHEkcD/jbFIcwhfz8f8t7B2kOzu9Q/4IWKtw0HtNT85x1Gs9ppPKIib31d/g0s1ypDtWryEbhuN7Y1O3lvRMULfjWsx649aFh6947E7TDInf///u/yXbpjhssewhBGQ5wEmjb51ICYKsulAXmvI3ft3GheTw8Or7QkgAAAAAAAAA==" alt="IKropka" style="height:28px;width:auto;display:block;" />
-    <span style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;margin-left:4px;">· Płatności</span>
+    <div class="logo-name"><em>IKR</em> <span class="logo-sub">Finanse</span></div>
   </div>
   <div style="display:flex;align-items:center;gap:8px;">
     <button class="save-btn" id="saveBtn" onclick="forceSave()">
@@ -375,27 +222,32 @@
     </button>
     <div class="undo-wrap">
       <button class="undo-btn" id="undoBtn" onclick="doUndo()" title="Cofnij (Ctrl+Z)" disabled>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 5h5a4 4 0 1 1 0 8H4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 2L5 5 2 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" transform="scale(-1,1) translate(-7,0)"/></svg>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 4H9a3 3 0 0 1 0 6H4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M6 2L4 4l2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <span class="undo-counter" id="undoCounter"></span>
       <button class="undo-btn" id="redoBtn" onclick="doRedo()" title="Ponów (Ctrl+Y)" disabled>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12 5H7a4 4 0 1 0 0 8h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2l3 3-3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" transform="translate(-3,0)"/></svg>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M10 4H5a3 3 0 0 0 0 6h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 2l2 2-2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
     <div class="sync-status">
       <div class="sync-dot" id="syncDot"></div>
-      <span id="syncLabel" class="hide-mobile">—</span>
+      <span id="syncLabel">—</span>
     </div>
   </div>
 </div>
 
-<!-- Page -->
 <div class="page">
-
-  <!-- Header card -->
   <div class="header-card">
     <div class="konto-label">Konto główne</div>
-    <div class="rezerwa-badge">Rezerwa: 80 000 zł</div>
+    <div class="rezerwa-badge" id="rezerwaBadge">
+      <span style="white-space:nowrap;">Rezerwa:&nbsp;</span>
+      <input type="text" id="rezerwaInput"
+        style="background:transparent;border:none;border-bottom:1px solid var(--red-mid);color:var(--red-dark);font-family:inherit;font-size:11px;font-weight:600;width:80px;padding:0 2px;text-align:right;"
+        oninput="updateRezerwa(this.value)"
+        onfocus="this.style.borderBottomColor='var(--red)'"
+        onblur="this.style.borderBottomColor='var(--red-mid)'"
+      /><span>&nbsp;zł</span>
+    </div>
     <div class="kwota-main-wrap">
       <div class="kwota-main" id="kwotaMain">—</div>
       <div class="kwota-currency">zł</div>
@@ -408,10 +260,27 @@
     </button>
   </div>
 
-  <!-- Months nav -->
-  <div class="months-nav" id="monthsNav"></div>
+  <!-- KOSZTY BIEŻĄCE -->
+  <div class="header-card" style="margin-bottom:12px;">
+    <div class="konto-label" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Koszty bieżące</span>
+    </div>
+    <div class="section-title" style="font-size:13px;font-weight:700;color:var(--dark);letter-spacing:0.04em;text-transform:uppercase;margin:6px 0 12px;border:none;padding:0;">KOSZTY BIEŻĄCE</div>
+    <div id="kosztItems"></div>
+    <button class="add-btn" style="margin-top:8px;" onclick="addKosztItem()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      dodaj wiersz
+    </button>
+    <div class="biezace-zost" style="margin-top:12px;">
+      <div>
+        <div class="biezace-zost-label">ZOSTAŁO</div>
+        <div class="biezace-zost-desc">kwota główna − koszty bieżące</div>
+      </div>
+      <div class="biezace-zost-value" id="kosztZost">—</div>
+    </div>
+  </div>
 
-  <!-- BIEŻĄCE panel -->
+  <div class="months-nav" id="monthsNav"></div>
   <div class="biezace-panel" id="biezacePanel" style="display:none;">
     <div class="month-content">
       <div class="month-header">
@@ -428,268 +297,21 @@
           </button>
         </div>
         <div class="biezace-zost">
-          <div class="biezace-zost-label">ZOST</div>
-          <div class="biezace-zost-desc">kwota główna − suma bieżących</div>
+          <div>
+            <div class="biezace-zost-label">ZOST</div>
+            <div class="biezace-zost-desc">kwota główna − suma bieżących</div>
+          </div>
           <div class="biezace-zost-value" id="biezaceZost">—</div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Month content -->
   <div class="month-content" id="monthContent"></div>
-
 </div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-// ─── RENDER ──────────────────────────────────────────────────────
-function render() {
-  renderSubRows();
-  renderMonthsNav();
-  renderBiezace();
-  renderMonthContent();
-  recalc();
-}
-
-function recalc() {
-  let sum = 0;
-  (state.subRows || []).forEach(r => {
-    sum += parseFloat((r.amount || '').replace(/\s/g,'').replace(',','.')) || 0;
-  });
-  document.getElementById('kwotaMain').textContent = Math.round(sum).toLocaleString('pl-PL');
-  recalcBiezaceZost();
-}
-
-function getMainSum() {
-  let sum = 0;
-  (state.subRows || []).forEach(r => {
-    sum += parseFloat((r.amount || '').replace(/\s/g,'').replace(',','.')) || 0;
-  });
-  return Math.round(sum);
-}
-
-function recalcBiezaceZost() {
-  let bSum = 0;
-  (state.biezaceItems || []).forEach(r => {
-    bSum += parseFloat((r.amount || '').replace(/\s/g,'').replace(',','.')) || 0;
-  });
-  const zost = getMainSum() - Math.round(bSum);
-  const el = document.getElementById('biezaceZost');
-  if (!el) return;
-  el.textContent = zost.toLocaleString('pl-PL') + ' zł';
-  el.className = 'biezace-zost-value' + (zost < 0 ? ' negative' : '');
-}
-
-function renderBiezace() {
-  const panel = document.getElementById('biezacePanel');
-  const cont  = document.getElementById('biezaceItems');
-  if (!panel || !cont) return;
-  const isBiezace = state.activeMonth === '__biezace__';
-  panel.style.display = isBiezace ? 'block' : 'none';
-  if (!isBiezace) return;
-  cont.innerHTML = '';
-  (state.biezaceItems || []).forEach((row, i) => {
-    const div = document.createElement('div');
-    div.className = 'biezace-item-row';
-    div.innerHTML = `
-      <input type="text" class="biezace-name-input" value="${esc(row.name)}" placeholder="nazwa…"
-        oninput="updateBiezaceItem(${i},'name',this.value)" />
-      <input type="text" class="biezace-amount-input" value="${esc(row.amount)}" placeholder="kwota"
-        oninput="updateBiezaceItem(${i},'amount',this.value)" />
-      <button class="biezace-del" onclick="delBiezaceItem(${i})" title="Usuń">×</button>
-    `;
-    cont.appendChild(div);
-  });
-  recalcBiezaceZost();
-}
-
-function renderSubRows() {
-  const cont = document.getElementById('subAmounts');
-  cont.innerHTML = '';
-  (state.subRows || []).forEach((row, i) => {
-    const div = document.createElement('div');
-    div.className = 'sub-row';
-    div.innerHTML = `
-      <div class="sub-amount-col">
-        <input type="text" class="amount-input" value="${esc(row.amount)}" placeholder="kwota"
-          oninput="updateSubRow(${i},'amount',this.value)" />
-      </div>
-      <div class="sub-text-col">
-        <input type="text" class="note-input" value="${esc(row.note)}" placeholder="opis…"
-          oninput="updateSubRow(${i},'note',this.value)" />
-      </div>
-      ${state.subRows.length > 1
-        ? `<button class="sub-del-btn" onclick="delSubRow(${i})" title="Usuń">×</button>`
-        : ''}
-    `;
-    cont.appendChild(div);
-  });
-}
-
-function renderMonthsNav() {
-  const nav = document.getElementById('monthsNav');
-  nav.innerHTML = '';
-  const isBiezace = state.activeMonth === '__biezace__';
-
-  const bBtn = document.createElement('button');
-  bBtn.className = 'month-btn biezace' + (isBiezace ? ' active' : '');
-  bBtn.style.background = isBiezace ? 'var(--red)' : 'var(--dark)';
-  bBtn.style.borderColor = isBiezace ? 'var(--red)' : 'var(--dark)';
-  bBtn.textContent = 'BIEŻĄCE';
-  bBtn.onclick = () => setActiveMonth('__biezace__');
-  nav.appendChild(bBtn);
-
-  (state.months || []).forEach(m => {
-    const btn = document.createElement('button');
-    btn.className = 'month-btn' + (m.id === state.activeMonth ? ' active' : '');
-    btn.innerHTML = `<span class="drag-icon">⠿</span>${m.label}`;
-    btn.onclick = () => setActiveMonth(m.id);
-    nav.appendChild(btn);
-  });
-}
-
-function renderMonthContent() {
-  const cont = document.getElementById('monthContent');
-  const month = (state.months || []).find(m => m.id === state.activeMonth);
-  if (!month || state.activeMonth === '__biezace__') { cont.innerHTML = ''; return; }
-
-  let html = `
-    <div class="month-header">
-      <h3>${month.label}</h3>
-      <span class="month-badge">2026</span>
-    </div>
-    <div class="month-body">`;
-
-  const mi = state.months.findIndex(m => m.id === state.activeMonth);
-
-  (month.sections || []).forEach((sec, si) => {
-    html += `<div class="section"><div class="section-title">${esc(sec.title)}</div>`;
-    (sec.items || []).forEach((item, ii) => {
-      html += `
-        <div class="item-row">
-          <div class="item-name${item.bold ? ' bold' : ''}">
-            <input type="text" value="${esc(item.name)}"
-              oninput="updateItem(${mi},${si},${ii},'name',this.value)" />
-          </div>
-          <div class="item-amount">
-            <input type="text" value="${esc(item.amount)}"
-              oninput="updateItem(${mi},${si},${ii},'amount',this.value)" />
-          </div>
-          <button class="row-del-btn" onclick="delItem(${mi},${si},${ii})" title="Usuń wiersz">×</button>
-        </div>`;
-    });
-    html += '</div>';
-  });
-
-  html += `
-      <div class="regis-bar">
-        <div>
-          <div class="regis-label">Regis — plan</div>
-          <div class="regis-sub">jest: <strong>${esc(month.regis?.jest || '—')}</strong></div>
-        </div>
-        <div class="regis-val">
-          <input type="text" value="${esc(month.regis?.plan || '')}"
-            oninput="updateRegis(${mi},'plan',this.value)" placeholder="plan" />
-        </div>
-      </div>
-    </div>`;
-
-  cont.innerHTML = html;
-}
-
-function esc(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-}
-
-// ─── TOAST ───────────────────────────────────────────────────────
-let toastTimer = null;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-// ─── MUTATIONS ───────────────────────────────────────────────────
-window.updateSubRow = (i, field, val) => {
-  pushHistory();
-  state.subRows[i][field] = val;
-  recalc();
-  scheduleSave();
-};
-window.addSubRow = () => {
-  pushHistory();
-  const id = Date.now();
-  state.subRows.push({ id, amount: '', note: '' });
-  renderSubRows();
-  scheduleSave();
-  const inputs = document.querySelectorAll('#subAmounts .amount-input');
-  if (inputs.length) inputs[inputs.length-1].focus();
-};
-window.delSubRow = (i) => {
-  pushHistory();
-  state.subRows.splice(i, 1);
-  renderSubRows();
-  recalc();
-  scheduleSave();
-};
-window.setActiveMonth = (id) => {
-  state.activeMonth = id;
-  renderMonthsNav();
-  renderMonthContent();
-  scheduleSave();
-};
-window.updateItem = (mi, si, ii, field, val) => {
-  pushHistory();
-  state.months[mi].sections[si].items[ii][field] = val;
-  scheduleSave();
-};
-window.delItem = (mi, si, ii) => {
-  pushHistory();
-  state.months[mi].sections[si].items.splice(ii, 1);
-  renderMonthContent();
-  scheduleSave();
-};
-window.updateRegis = (mi, field, val) => {
-  pushHistory();
-  if (!state.months[mi].regis) state.months[mi].regis = {};
-  state.months[mi].regis[field] = val;
-  scheduleSave();
-};
-
-window.updateBiezaceItem = (i, field, val) => {
-  pushHistory();
-  if (!state.biezaceItems) state.biezaceItems = [];
-  state.biezaceItems[i][field] = val;
-  recalcBiezaceZost();
-  scheduleSave();
-};
-window.addBiezaceItem = () => {
-  pushHistory();
-  if (!state.biezaceItems) state.biezaceItems = [];
-  state.biezaceItems.push({ id: Date.now(), name: '', amount: '' });
-  renderBiezace();
-  scheduleSave();
-  const inputs = document.querySelectorAll('.biezace-name-input');
-  if (inputs.length) inputs[inputs.length-1].focus();
-};
-window.delBiezaceItem = (i) => {
-  pushHistory();
-  state.biezaceItems.splice(i, 1);
-  renderBiezace();
-  scheduleSave();
-};
-
-// Initial render while waiting for Firebase
-render();
-updateUndoButtons();
-
-// ─── FIREBASE INIT ───────────────────────────────────────────────
 
 const firebaseConfig = {
   apiKey: "AIzaSyD4TRUI05bmOwyJHXuA_oAI3JhKU8tQN6Q",
@@ -699,341 +321,301 @@ const firebaseConfig = {
   messagingSenderId: "781623214606",
   appId: "1:781623214606:web:d1670bfc386ec1355bf25f"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const DOC = doc(db, 'app', 'data');
 
-// ─── DEFAULT DATA ───────────────────────────────────────────────
 const DEFAULT = {
+  rezerwa: '80 000',
   subRows: [
     { id: 1, amount: '11450', note: '' },
     { id: 2, amount: '13584', note: '' },
-    { id: 3, amount: '1300',  note: '' },
+    { id: 3, amount: '1300', note: '' },
   ],
   activeMonth: 'czerwiec',
   biezaceItems: [
     { id: 1, name: 'BIEŻĄCE CZERWIEC', amount: '4000' },
-    { id: 2, name: 'PENSJE',           amount: '12400' },
+    { id: 2, name: 'PENSJE', amount: '12400' },
+  ],
+  kosztItems: [
+    { id: 1, name: '', amount: '' },
   ],
   months: [
-    {
-      id: 'maj', label: 'MAJ',
-      sections: [
-        { title: 'Pensje', items: [
-          { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
-          { name: 'Wortal Pratt', amount: '24 000' },
-          { name: 'Tworek', amount: '11 600 (14 268)' },
-          { name: 'Tworek', amount: '5 000 (6 150)' },
-        ]},
-        { title: 'Podatki', items: [
-          { name: 'Podatki', amount: '11 403', bold: true },
-          { name: 'Pakiet Zero B', amount: '11 403' },
-        ]},
-        { title: 'Regis / CF', items: [
-          { name: 'Regis/CF', amount: '22 325' },
-          { name: 'DPD 1/2025', amount: '15 600' },
-          { name: 'GVL Hasło', amount: '1 800' },
-          { name: 'GVL Reklamy B', amount: '5 100' },
-        ]},
-        { title: 'Rezerwy', items: [
-          { name: 'Rezerwa 2', amount: '8 000' },
-        ]},
-      ],
-      regis: { plan: '35 265', jest: '36 300' }
-    },
-    {
-      id: 'czerwiec', label: 'CZERWIEC',
-      sections: [
-        { title: 'Pensje', items: [
-          { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
-          { name: 'Wortal Pratt', amount: '24 000' },
-          { name: 'Tworek', amount: '11 600 (14 268)' },
-          { name: 'Tworek', amount: '5 000 (6 150)' },
-          { name: 'Monika', amount: '2 000' },
-        ]},
-        { title: 'Kredyty / Czynsze', items: [
-          { name: 'Kredyt hipoteczny', amount: '—', bold: true },
-          { name: 'Czynsz Jacek', amount: '1 230' },
-          { name: 'Czynsz Green', amount: '4 000' },
-          { name: 'Robert / Pakiet Zero B', amount: '7 000', bold: true },
-        ]},
-        { title: 'Bieżące', items: [
-          { name: 'Konto + Recepta 1/2026 B', amount: '4 000 + 6 000' },
-          { name: 'Kredyt obrotowy', amount: '2 000' },
-          { name: 'Korekta', amount: '-600' },
-          { name: 'Adobe', amount: '1 600' },
-          { name: 'Orange', amount: '550' },
-          { name: 'Banaś', amount: '1 300' },
-          { name: 'Kredyt Getin', amount: '1 350' },
-          { name: 'Prąd / Gaz', amount: '1 000' },
-          { name: 'PZU', amount: '465,52' },
-        ]},
-        { title: 'Podatki', items: [
-          { name: 'Podatki', amount: '19 000 / 22 200', bold: true },
-          { name: 'GVL Książeczka', amount: '6 000' },
-          { name: 'Recepta 1/2026 B', amount: '6 200' },
-          { name: 'BP Wortal', amount: '4 400' },
-          { name: 'Pakiet Zero C', amount: '1 800' },
-          { name: 'Benia', amount: '800' },
-        ]},
-        { title: 'Regis / CF', items: [
-          { name: 'Książka BHP', amount: '13 000' },
-          { name: 'Termika 3/2026', amount: '11 000' },
-          { name: 'Książeczka Tubes', amount: '12 000' },
-        ]},
-        { title: 'Rezerwy', items: [
-          { name: 'Rezerwa 3', amount: '10 000' },
-          { name: 'Rezerwa 2b', amount: '8 000' },
-          { name: 'Wizytówki', amount: '2 000' },
-        ]},
-      ],
-      regis: { plan: '20 000', jest: '20 000' }
-    },
-    {
-      id: 'lipiec', label: 'LIPIEC',
-      sections: [
-        { title: 'Pensje', items: [
-          { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
-          { name: 'Wortal Pratt', amount: '24 000' },
-          { name: 'Tworek', amount: '11 600 (14 268)' },
-          { name: 'Tworek', amount: '5 000 (6 150)' },
-          { name: 'Monika', amount: '2 000' },
-        ]},
-        { title: 'Kredyty / Czynsze', items: [
-          { name: 'Kredyt hipoteczny', amount: '—', bold: true },
-          { name: 'Czynsz Jacek', amount: '1 230' },
-          { name: 'Czynsz Green', amount: '4 000' },
-          { name: 'Robert', amount: '7 000', bold: true },
-          { name: 'Pratt Wortal', amount: '4 000' },
-          { name: 'Habasit Kartki', amount: '3 500' },
-        ]},
-        { title: 'Bieżące', items: [
-          { name: 'Manowieści 2/2026', amount: '15 000' },
-          { name: 'Kredyt obrotowy', amount: '2 000' },
-          { name: 'Korekta', amount: '-1 200' },
-          { name: 'Adobe', amount: '1 600' },
-          { name: 'Orange', amount: '550' },
-          { name: 'Banaś', amount: '1 300' },
-          { name: 'Kredyt Getin', amount: '1 350' },
-          { name: 'Prąd / Gaz', amount: '1 000' },
-          { name: 'Leasing', amount: '3 800' },
-          { name: 'PZU', amount: '465,52' },
-        ]},
-        { title: 'Podatki', items: [
-          { name: 'Podatki', amount: '29 500 / 28 500', bold: true },
-          { name: 'Lututów A', amount: '17 500' },
-          { name: 'Habasit Próbki', amount: '6 000' },
-          { name: 'Mowi 1/2026 A', amount: '6 000' },
-        ]},
-        { title: 'Regis / CF', items: [
-          { name: 'Lututów 2/2026 B', amount: '4 900' },
-          { name: 'Biper', amount: '4 400' },
-          { name: 'Mowi 1/2026 B', amount: '10 700' },
-        ]},
-      ],
-      regis: { plan: '19 000', jest: '15 600' }
-    },
-    {
-      id: 'sierpien', label: 'SIERPIEŃ',
-      sections: [
-        { title: 'Pensje', items: [
-          { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
-          { name: 'Wortal Pratt', amount: '24 000' },
-          { name: 'Tworek', amount: '11 600 (14 268)' },
-          { name: 'Tworek', amount: '5 000 (6 150)' },
-          { name: 'Monika', amount: '2 000' },
-        ]},
-        { title: 'Kredyty / Czynsze', items: [
-          { name: 'Kredyt hipoteczny', amount: '—', bold: true },
-          { name: 'Czynsz Jacek', amount: '1 230' },
-          { name: 'Czynsz Green', amount: '4 000' },
-          { name: 'Robert', amount: '7 000', bold: true },
-          { name: 'BP Starter 1', amount: '7 000' },
-        ]},
-        { title: 'Bieżące', items: [
-          { name: 'Wiadomości 2/2026', amount: '15 000' },
-          { name: 'Kredyt obrotowy', amount: '2 800' },
-          { name: 'Korekta', amount: '-1 200' },
-          { name: 'Adobe', amount: '1 600' },
-          { name: 'Orange', amount: '550' },
-          { name: 'Banaś', amount: '1 300' },
-          { name: 'Kredyt Getin', amount: '1 350' },
-          { name: 'Prąd / Gaz', amount: '1 000' },
-          { name: 'Leasing', amount: '3 800' },
-          { name: 'PZU', amount: '465,52' },
-        ]},
-        { title: 'Podatki', items: [
-          { name: 'Podatki', amount: '28 000 / 29 000', bold: true },
-          { name: 'Recepta 3/2026', amount: '12 300' },
-          { name: 'Mowi 1/2026 C', amount: '12 700' },
-          { name: 'Biper', amount: '4 000' },
-        ]},
-        { title: 'Regis / CF', items: [
-          { name: 'DPD 2', amount: '15 600' },
-        ]},
-        { title: 'Rezerwy', items: [
-          { name: 'Rezerwa 4', amount: '24 000' },
-          { name: 'Rezerwa 3B', amount: '10 000' },
-          { name: 'PWK Gazeta', amount: '17 000' },
-          { name: 'Mowi 1/2026 D', amount: '…' },
-        ]},
-      ],
-      regis: { plan: '…', jest: '0' }
-    },
-    {
-      id: 'wrzesien', label: 'WRZESIEŃ',
-      sections: [
-        { title: 'Pensje', items: [
-          { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
-          { name: 'Wortal Pratt', amount: '24 000' },
-          { name: 'Tworek', amount: '11 600 (14 268)' },
-          { name: 'Tworek', amount: '5 000 (6 150)' },
-          { name: 'Monika', amount: '2 000' },
-        ]},
-        { title: 'Kredyty / Czynsze', items: [
-          { name: 'Kredyt hipoteczny', amount: '—', bold: true },
-          { name: 'Czynsz Jacek', amount: '1 230' },
-          { name: 'Czynsz Green', amount: '4 000' },
-          { name: 'Robert', amount: '7 000', bold: true },
-          { name: 'BP Starter 2', amount: '4 000' },
-          { name: 'BP Wortal', amount: '3 000' },
-        ]},
-        { title: 'Bieżące', items: [
-          { name: 'Termika 4/2026 + Pratt Wortal', amount: '12 300 + 3 000' },
-          { name: 'Kredyt obrotowy', amount: '2 800' },
-          { name: 'Korekta', amount: '-1 200' },
-          { name: 'Adobe', amount: '1 600' },
-          { name: 'Orange', amount: '550' },
-          { name: 'Banaś', amount: '1 300' },
-          { name: 'Kredyt Getin', amount: '1 350' },
-          { name: 'Prąd / Gaz', amount: '1 000' },
-          { name: 'Leasing', amount: '3 800' },
-          { name: 'PZU', amount: '465,52' },
-        ]},
-        { title: 'Podatki', items: [
-          { name: 'Podatki', amount: '… / 27 500', bold: true },
-          { name: 'Manowieści 3/2026', amount: '15 500' },
-          { name: 'Lututów Książka', amount: '12 000' },
-        ]},
-      ],
-      regis: { plan: '…', jest: '12 300' }
-    },
-    {
-      id: 'pazdziernik', label: 'PAŹDZIERNIK',
-      sections: [
-        { title: 'Pensje', items: [
-          { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
-          { name: 'Wortal Pratt', amount: '24 000' },
-          { name: 'Tworek', amount: '11 600 (14 268)' },
-          { name: 'Tworek', amount: '5 000 (6 150)' },
-          { name: 'Monika', amount: '2 000' },
-        ]},
-        { title: 'Kredyty / Czynsze', items: [
-          { name: 'Kredyt hipoteczny', amount: '—', bold: true },
-          { name: 'Czynsz Jacek', amount: '1 230' },
-          { name: 'Czynsz Green', amount: '4 000' },
-          { name: 'Robert', amount: '7 000', bold: true },
-          { name: 'GVL FB', amount: '3 000' },
-          { name: 'Rezerwa 4A', amount: '4 000' },
-        ]},
-        { title: 'Bieżące', items: [
-          { name: 'Wiadomości 3/2026', amount: '15 000' },
-          { name: 'Kredyt obrotowy', amount: '2 800' },
-          { name: 'Korekta', amount: '-1 200' },
-          { name: 'Adobe', amount: '1 600' },
-          { name: 'Orange', amount: '550' },
-          { name: 'Banaś', amount: '1 300' },
-          { name: 'Kredyt Getin', amount: '1 350' },
-          { name: 'Prąd / Gaz', amount: '1 000' },
-          { name: 'Leasing', amount: '3 800' },
-          { name: 'PZU', amount: '465,52' },
-        ]},
-        { title: 'Podatki', items: [
-          { name: 'Podatki', amount: '… / 21 000', bold: true },
-          { name: 'DPD 3/2026', amount: '15 000' },
-          { name: 'Rezerwa 4B', amount: '6 000' },
-        ]},
-        { title: 'Regis / CF', items: [
-          { name: 'Lututów Wrzesień 3/2026 A', amount: '12 800' },
-        ]},
-        { title: 'Rezerwy', items: [
-          { name: 'Rezerwa 5', amount: '20 000' },
-          { name: 'Rezerwa 4C', amount: '12 000' },
-          { name: 'Lututów Wrzesień', amount: '8 000' },
-        ]},
-      ],
-      regis: { plan: '…', jest: '…' }
-    },
+    { id: 'maj', label: 'MAJ', sections: [
+      { title: 'Pensje', items: [
+        { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
+        { name: 'Wortal Pratt', amount: '24 000' },
+        { name: 'Tworek', amount: '11 600 (14 268)' },
+        { name: 'Tworek', amount: '5 000 (6 150)' },
+      ]},
+      { title: 'Podatki', items: [
+        { name: 'Podatki', amount: '11 403', bold: true },
+        { name: 'Pakiet Zero B', amount: '11 403' },
+      ]},
+      { title: 'Regis / CF', items: [
+        { name: 'Regis/CF', amount: '22 325' },
+        { name: 'DPD 1/2025', amount: '15 600' },
+        { name: 'GVL Hasło', amount: '1 800' },
+        { name: 'GVL Reklamy B', amount: '5 100' },
+      ]},
+      { title: 'Rezerwy', items: [{ name: 'Rezerwa 2', amount: '8 000' }]},
+    ], regis: { plan: '35 265', jest: '36 300' }},
+    { id: 'czerwiec', label: 'CZERWIEC', sections: [
+      { title: 'Pensje', items: [
+        { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
+        { name: 'Wortal Pratt', amount: '24 000' },
+        { name: 'Tworek', amount: '11 600 (14 268)' },
+        { name: 'Tworek', amount: '5 000 (6 150)' },
+        { name: 'Monika', amount: '2 000' },
+      ]},
+      { title: 'CZYNSZ', items: [
+        { name: 'Czynsz Jacek', amount: '1 230' },
+        { name: 'Czynsz Green', amount: '4 000' },
+        { name: 'Robert / Pakiet Zero B', amount: '7 000', bold: true },
+      ]},
+      { title: 'Bieżące', items: [
+        { name: 'Konto + Recepta 1/2026 B', amount: '4 000 + 6 000' },
+        { name: 'Kredyt obrotowy', amount: '2 000' },
+        { name: 'Korekta', amount: '-600' },
+        { name: 'Adobe', amount: '1 600' },
+        { name: 'Orange', amount: '550' },
+        { name: 'Banaś', amount: '1 300' },
+        { name: 'Kredyt Getin', amount: '1 350' },
+        { name: 'Prąd / Gaz', amount: '1 000' },
+        { name: 'PZU', amount: '465,52' },
+      ]},
+      { title: 'Podatki', items: [
+        { name: 'Podatki', amount: '19 000 / 22 200', bold: true },
+        { name: 'GVL Książeczka', amount: '6 000' },
+        { name: 'Recepta 1/2026 B', amount: '6 200' },
+        { name: 'BP Wortal', amount: '4 400' },
+        { name: 'Pakiet Zero C', amount: '1 800' },
+        { name: 'Benia', amount: '800' },
+      ]},
+      { title: 'Regis / CF', items: [
+        { name: 'Książka BHP', amount: '13 000' },
+        { name: 'Termika 3/2026', amount: '11 000' },
+        { name: 'Książeczka Tubes', amount: '12 000' },
+      ]},
+      { title: 'Rezerwy', items: [
+        { name: 'Rezerwa 3', amount: '10 000' },
+        { name: 'Rezerwa 2b', amount: '8 000' },
+        { name: 'Wizytówki', amount: '2 000' },
+      ]},
+    ], regis: { plan: '20 000', jest: '20 000' }},
+    { id: 'lipiec', label: 'LIPIEC', sections: [
+      { title: 'Pensje', items: [
+        { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
+        { name: 'Wortal Pratt', amount: '24 000' },
+        { name: 'Tworek', amount: '11 600 (14 268)' },
+        { name: 'Tworek', amount: '5 000 (6 150)' },
+        { name: 'Monika', amount: '2 000' },
+      ]},
+      { title: 'CZYNSZ', items: [
+        { name: 'Czynsz Jacek', amount: '1 230' },
+        { name: 'Czynsz Green', amount: '4 000' },
+        { name: 'Robert', amount: '7 000', bold: true },
+        { name: 'Pratt Wortal', amount: '4 000' },
+        { name: 'Habasit Kartki', amount: '3 500' },
+      ]},
+      { title: 'Bieżące', items: [
+        { name: 'Manowieści 2/2026', amount: '15 000' },
+        { name: 'Kredyt obrotowy', amount: '2 000' },
+        { name: 'Korekta', amount: '-1 200' },
+        { name: 'Adobe', amount: '1 600' },
+        { name: 'Orange', amount: '550' },
+        { name: 'Banaś', amount: '1 300' },
+        { name: 'Kredyt Getin', amount: '1 350' },
+        { name: 'Prąd / Gaz', amount: '1 000' },
+        { name: 'Leasing', amount: '3 800' },
+        { name: 'PZU', amount: '465,52' },
+      ]},
+      { title: 'Podatki', items: [
+        { name: 'Podatki', amount: '29 500 / 28 500', bold: true },
+        { name: 'Lututów A', amount: '17 500' },
+        { name: 'Habasit Próbki', amount: '6 000' },
+        { name: 'Mowi 1/2026 A', amount: '6 000' },
+      ]},
+      { title: 'Regis / CF', items: [
+        { name: 'Lututów 2/2026 B', amount: '4 900' },
+        { name: 'Biper', amount: '4 400' },
+        { name: 'Mowi 1/2026 B', amount: '10 700' },
+      ]},
+    ], regis: { plan: '19 000', jest: '15 600' }},
+    { id: 'sierpien', label: 'SIERPIEŃ', sections: [
+      { title: 'Pensje', items: [
+        { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
+        { name: 'Wortal Pratt', amount: '24 000' },
+        { name: 'Tworek', amount: '11 600 (14 268)' },
+        { name: 'Tworek', amount: '5 000 (6 150)' },
+        { name: 'Monika', amount: '2 000' },
+      ]},
+      { title: 'CZYNSZ', items: [
+        { name: 'Czynsz Jacek', amount: '1 230' },
+        { name: 'Czynsz Green', amount: '4 000' },
+        { name: 'Robert', amount: '7 000', bold: true },
+        { name: 'BP Starter 1', amount: '7 000' },
+      ]},
+      { title: 'Bieżące', items: [
+        { name: 'Wiadomości 2/2026', amount: '15 000' },
+        { name: 'Kredyt obrotowy', amount: '2 800' },
+        { name: 'Korekta', amount: '-1 200' },
+        { name: 'Adobe', amount: '1 600' },
+        { name: 'Orange', amount: '550' },
+        { name: 'Banaś', amount: '1 300' },
+        { name: 'Kredyt Getin', amount: '1 350' },
+        { name: 'Prąd / Gaz', amount: '1 000' },
+        { name: 'Leasing', amount: '3 800' },
+        { name: 'PZU', amount: '465,52' },
+      ]},
+      { title: 'Podatki', items: [
+        { name: 'Podatki', amount: '28 000 / 29 000', bold: true },
+        { name: 'Recepta 3/2026', amount: '12 300' },
+        { name: 'Mowi 1/2026 C', amount: '12 700' },
+        { name: 'Biper', amount: '4 000' },
+      ]},
+      { title: 'Regis / CF', items: [{ name: 'DPD 2', amount: '15 600' }]},
+      { title: 'Rezerwy', items: [
+        { name: 'Rezerwa 4', amount: '24 000' },
+        { name: 'Rezerwa 3B', amount: '10 000' },
+        { name: 'PWK Gazeta', amount: '17 000' },
+        { name: 'Mowi 1/2026 D', amount: '…' },
+      ]},
+    ], regis: { plan: '…', jest: '0' }},
+    { id: 'wrzesien', label: 'WRZESIEŃ', sections: [
+      { title: 'Pensje', items: [
+        { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
+        { name: 'Wortal Pratt', amount: '24 000' },
+        { name: 'Tworek', amount: '11 600 (14 268)' },
+        { name: 'Tworek', amount: '5 000 (6 150)' },
+        { name: 'Monika', amount: '2 000' },
+      ]},
+      { title: 'CZYNSZ', items: [
+        { name: 'Czynsz Jacek', amount: '1 230' },
+        { name: 'Czynsz Green', amount: '4 000' },
+        { name: 'Robert', amount: '7 000', bold: true },
+        { name: 'BP Starter 2', amount: '4 000' },
+        { name: 'BP Wortal', amount: '3 000' },
+      ]},
+      { title: 'Bieżące', items: [
+        { name: 'Termika 4/2026 + Pratt Wortal', amount: '12 300 + 3 000' },
+        { name: 'Kredyt obrotowy', amount: '2 800' },
+        { name: 'Korekta', amount: '-1 200' },
+        { name: 'Adobe', amount: '1 600' },
+        { name: 'Orange', amount: '550' },
+        { name: 'Banaś', amount: '1 300' },
+        { name: 'Kredyt Getin', amount: '1 350' },
+        { name: 'Prąd / Gaz', amount: '1 000' },
+        { name: 'Leasing', amount: '3 800' },
+        { name: 'PZU', amount: '465,52' },
+      ]},
+      { title: 'Podatki', items: [
+        { name: 'Podatki', amount: '… / 27 500', bold: true },
+        { name: 'Manowieści 3/2026', amount: '15 500' },
+        { name: 'Lututów Książka', amount: '12 000' },
+      ]},
+    ], regis: { plan: '…', jest: '12 300' }},
+    { id: 'pazdziernik', label: 'PAŹDZIERNIK', sections: [
+      { title: 'Pensje', items: [
+        { name: 'Pensje + BP', amount: '29 000 + 12 800', bold: true },
+        { name: 'Wortal Pratt', amount: '24 000' },
+        { name: 'Tworek', amount: '11 600 (14 268)' },
+        { name: 'Tworek', amount: '5 000 (6 150)' },
+        { name: 'Monika', amount: '2 000' },
+      ]},
+      { title: 'CZYNSZ', items: [
+        { name: 'Czynsz Jacek', amount: '1 230' },
+        { name: 'Czynsz Green', amount: '4 000' },
+        { name: 'Robert', amount: '7 000', bold: true },
+        { name: 'GVL FB', amount: '3 000' },
+        { name: 'Rezerwa 4A', amount: '4 000' },
+      ]},
+      { title: 'Bieżące', items: [
+        { name: 'Wiadomości 3/2026', amount: '15 000' },
+        { name: 'Kredyt obrotowy', amount: '2 800' },
+        { name: 'Korekta', amount: '-1 200' },
+        { name: 'Adobe', amount: '1 600' },
+        { name: 'Orange', amount: '550' },
+        { name: 'Banaś', amount: '1 300' },
+        { name: 'Kredyt Getin', amount: '1 350' },
+        { name: 'Prąd / Gaz', amount: '1 000' },
+        { name: 'Leasing', amount: '3 800' },
+        { name: 'PZU', amount: '465,52' },
+      ]},
+      { title: 'Podatki', items: [
+        { name: 'Podatki', amount: '… / 21 000', bold: true },
+        { name: 'DPD 3/2026', amount: '15 000' },
+        { name: 'Rezerwa 4B', amount: '6 000' },
+      ]},
+      { title: 'Regis / CF', items: [{ name: 'Lututów Wrzesień 3/2026 A', amount: '12 800' }]},
+      { title: 'Rezerwy', items: [
+        { name: 'Rezerwa 5', amount: '20 000' },
+        { name: 'Rezerwa 4C', amount: '12 000' },
+        { name: 'Lututów Wrzesień', amount: '8 000' },
+      ]},
+    ], regis: { plan: '…', jest: '…' }},
   ]
 };
 
-// ─── STATE ───────────────────────────────────────────────────────
+// ── STATE ──
 let state = JSON.parse(JSON.stringify(DEFAULT));
 let saveTimer = null;
 let isLoaded = false;
-
-// ─── UNDO/REDO HISTORY ───────────────────────────────────────────
 const MAX_HISTORY = 50;
-let history = [];   // past states (oldest first)
-let future  = [];   // redo stack
+let history = [];
+let future = [];
 
 function pushHistory() {
   history.push(JSON.stringify(state));
   if (history.length > MAX_HISTORY) history.shift();
-  future = [];  // new action clears redo
+  future = [];
   updateUndoButtons();
 }
-
 function updateUndoButtons() {
-  const undoBtn = document.getElementById('undoBtn');
-  const redoBtn = document.getElementById('redoBtn');
-  const counter = document.getElementById('undoCounter');
-  if (undoBtn) undoBtn.disabled = history.length === 0;
-  if (redoBtn) redoBtn.disabled = future.length === 0;
-  if (counter) counter.textContent = history.length > 0 ? `${history.length}` : '';
+  const u = document.getElementById('undoBtn');
+  const r = document.getElementById('redoBtn');
+  const c = document.getElementById('undoCounter');
+  if (u) u.disabled = history.length === 0;
+  if (r) r.disabled = future.length === 0;
+  if (c) c.textContent = history.length > 0 ? history.length : '';
 }
-
 window.doUndo = () => {
   if (!history.length) return;
   future.push(JSON.stringify(state));
   state = JSON.parse(history.pop());
-  render();
-  updateUndoButtons();
-  scheduleSave();
-  showToast('Cofnięto zmianę');
+  render(); updateUndoButtons(); scheduleSave(); showToast('Cofnięto');
 };
-
 window.doRedo = () => {
   if (!future.length) return;
   history.push(JSON.stringify(state));
   state = JSON.parse(future.pop());
-  render();
-  updateUndoButtons();
-  scheduleSave();
-  showToast('Ponowiono zmianę');
+  render(); updateUndoButtons(); scheduleSave(); showToast('Ponowiono');
 };
-
-// Keyboard shortcuts
 document.addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) { e.preventDefault(); doUndo(); }
-  if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); doRedo(); }
+  if ((e.ctrlKey||e.metaKey) && e.key==='z' && !e.shiftKey) { e.preventDefault(); doUndo(); }
+  if ((e.ctrlKey||e.metaKey) && (e.key==='y'||(e.key==='z'&&e.shiftKey))) { e.preventDefault(); doRedo(); }
 });
 
-// ─── SYNC ────────────────────────────────────────────────────────
-function setSyncStatus(status) {
-  const dot = document.getElementById('syncDot');
-  const label = document.getElementById('syncLabel');
-  dot.className = 'sync-dot ' + status;
-  const map = { ok: 'Zsynchronizowano', saving: 'Zapisuję…', error: 'Błąd sync', '': '—' };
-  label.textContent = map[status] || '—';
+// ── TOAST ──
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
 }
 
+// ── SYNC ──
+function setSyncStatus(s) {
+  const dot = document.getElementById('syncDot');
+  const lbl = document.getElementById('syncLabel');
+  dot.className = 'sync-dot ' + s;
+  lbl.textContent = {ok:'Zsynchronizowano', saving:'Zapisuję…', error:'Błąd sync'}[s] || '—';
+}
 function markDirty() {
   const btn = document.getElementById('saveBtn');
-  if (btn) { btn.className = 'save-btn dirty'; btn.textContent = ''; btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 1h7l2 2v9H2V1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><rect x="4" y="7" width="5" height="4" rx="0.5" stroke="currentColor" stroke-width="1.4"/><rect x="4" y="1" width="4" height="3" rx="0.5" stroke="currentColor" stroke-width="1.4"/></svg> Zapisz'; }
+  if (btn) { btn.className = 'save-btn dirty'; btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 1h7l2 2v9H2V1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><rect x="4" y="7" width="5" height="4" rx="0.5" stroke="currentColor" stroke-width="1.4"/><rect x="4" y="1" width="4" height="3" rx="0.5" stroke="currentColor" stroke-width="1.4"/></svg> Zapisz'; }
 }
-
 function markSaved() {
   const btn = document.getElementById('saveBtn');
   if (btn) {
@@ -1042,50 +624,366 @@ function markSaved() {
     setTimeout(() => { btn.className = 'save-btn'; }, 2000);
   }
 }
-
 window.forceSave = async () => {
-  const btn = document.getElementById('saveBtn');
-  if (btn) { btn.innerHTML = '…'; btn.className = 'save-btn dirty'; }
-  try {
-    await setDoc(DOC, state);
-    setSyncStatus('ok');
-    markSaved();
-    showToast('Zapisano');
-  } catch(e) {
-    setSyncStatus('error');
-    showToast('Błąd zapisu!');
-  }
+  try { await setDoc(DOC, state); setSyncStatus('ok'); markSaved(); showToast('Zapisano'); }
+  catch(e) { setSyncStatus('error'); showToast('Błąd zapisu!'); }
 };
-
 function scheduleSave() {
-  markDirty();
-  setSyncStatus('saving');
+  markDirty(); setSyncStatus('saving');
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
-    try {
-      await setDoc(DOC, state);
-      setSyncStatus('ok');
-      markSaved();
-    } catch(e) {
-      setSyncStatus('error');
-      console.error(e);
-    }
+    try { await setDoc(DOC, state); setSyncStatus('ok'); markSaved(); }
+    catch(e) { setSyncStatus('error'); }
   }, 2000);
 }
 
-// Listen for real-time updates
+// ── RENDER ──
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function getMainSum() {
+  let s = 0;
+  (state.subRows||[]).forEach(r => { s += parseFloat((r.amount||'').replace(/\s/g,'').replace(',','.')) || 0; });
+  return Math.round(s);
+}
+function recalc() {
+  document.getElementById('kwotaMain').textContent = getMainSum().toLocaleString('pl-PL');
+  recalcBiezaceZost();
+  recalcKosztZost();
+}
+
+function recalcKosztZost() {
+  let s = 0;
+  (state.kosztItems||[]).forEach(r => { s += parseFloat((r.amount||'').replace(/\s/g,'').replace(',','.')) || 0; });
+  const z = getMainSum() - Math.round(s);
+  const el = document.getElementById('kosztZost');
+  if (!el) return;
+  el.textContent = z.toLocaleString('pl-PL') + ' zł';
+  el.className = 'biezace-zost-value' + (z < 0 ? ' negative' : '');
+}
+function recalcBiezaceZost() {
+  let s = 0;
+  (state.biezaceItems||[]).forEach(r => { s += parseFloat((r.amount||'').replace(/\s/g,'').replace(',','.')) || 0; });
+  const z = getMainSum() - Math.round(s);
+  const el = document.getElementById('biezaceZost');
+  if (!el) return;
+  el.textContent = z.toLocaleString('pl-PL') + ' zł';
+  el.className = 'biezace-zost-value' + (z < 0 ? ' negative' : '');
+}
+
+function render() { renderRezerwa(); renderSubRows(); renderKoszty(); renderMonthsNav(); renderBiezace(); renderMonthContent(); recalc(); }
+
+function renderKoszty() {
+  const cont = document.getElementById('kosztItems');
+  if (!cont) return;
+  if (!state.kosztItems) state.kosztItems = [];
+  cont.innerHTML = '';
+  state.kosztItems.forEach((row, i) => {
+    const d = document.createElement('div');
+    d.className = 'biezace-item-row';
+    d.innerHTML = `
+      <input type="text" value="${esc(row.name)}" placeholder="nazwa…"
+        oninput="updateKosztItem(${i},'name',this.value)"
+        style="flex:1;color:var(--muted);font-size:13px;font-family:inherit;background:transparent;border:none;border-bottom:1px solid transparent;padding:0 2px;width:100%;"/>
+      <input type="text" value="${esc(row.amount)}" placeholder="kwota"
+        oninput="updateKosztItem(${i},'amount',this.value)"
+        style="font-size:13px;font-weight:600;text-align:right;width:110px;color:var(--text);font-family:inherit;background:transparent;border:none;border-bottom:1px solid transparent;padding:0 2px;"/>
+      <button class="biezace-del" onclick="delKosztItem(${i})">×</button>`;
+    cont.appendChild(d);
+  });
+  recalcKosztZost();
+}
+
+function renderRezerwa() {
+  const inp = document.getElementById('rezerwaInput');
+  if (inp) inp.value = state.rezerwa || '80 000';
+}
+
+function renderSubRows() {
+  const c = document.getElementById('subAmounts'); c.innerHTML = '';
+  (state.subRows||[]).forEach((row, i) => {
+    const d = document.createElement('div'); d.className = 'sub-row';
+    d.innerHTML = `<div class="sub-amount-col"><input type="text" class="amount-input" value="${esc(row.amount)}" placeholder="kwota" oninput="updateSubRow(${i},'amount',this.value)"/></div><div class="sub-text-col"><input type="text" class="note-input" value="${esc(row.note)}" placeholder="opis…" oninput="updateSubRow(${i},'note',this.value)"/></div>${state.subRows.length>1?`<button class="sub-del-btn" onclick="delSubRow(${i})">×</button>`:''}`;
+    c.appendChild(d);
+  });
+}
+
+function renderMonthsNav() {
+  const nav = document.getElementById('monthsNav'); nav.innerHTML = '';
+  const isB = state.activeMonth === '__biezace__';
+
+  // BIEŻĄCE — stały, bez edycji
+  const bBtn = document.createElement('button');
+  bBtn.className = 'month-btn biezace' + (isB ? ' active' : '');
+  bBtn.style.background = isB ? 'var(--red)' : 'var(--dark)';
+  bBtn.style.borderColor = isB ? 'var(--red)' : 'var(--dark)';
+  bBtn.textContent = 'BIEŻĄCE';
+  bBtn.onclick = () => setActiveMonth('__biezace__');
+  nav.appendChild(bBtn);
+
+  // Miesiące z przyciskami edycji i usuwania
+  (state.months||[]).forEach((m, mi) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'month-btn-wrap';
+    wrap.innerHTML = `
+      <button class="month-btn${m.id===state.activeMonth?' active':''}" onclick="setActiveMonth('${m.id}')">
+        <span class="drag-icon">⠿</span>${m.label}
+      </button>
+      <div class="month-actions">
+        <button class="month-action-btn month-edit-btn" onclick="editMonth(${mi},event)" title="Zmień nazwę">✎</button>
+        <button class="month-action-btn month-del-btn" onclick="deleteMonth(${mi},event)" title="Usuń">×</button>
+      </div>`;
+    nav.appendChild(wrap);
+  });
+
+  // Przycisk dodawania nowego miesiąca
+  const addBtn = document.createElement('button');
+  addBtn.className = 'month-add-btn';
+  addBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> dodaj`;
+  addBtn.onclick = () => addMonth();
+  nav.appendChild(addBtn);
+}
+
+function renderBiezace() {
+  const panel = document.getElementById('biezacePanel');
+  const cont = document.getElementById('biezaceItems');
+  const isB = state.activeMonth === '__biezace__';
+  panel.style.display = isB ? 'block' : 'none';
+  if (!isB) return;
+  cont.innerHTML = '';
+  (state.biezaceItems||[]).forEach((row, i) => {
+    const d = document.createElement('div'); d.className = 'biezace-item-row';
+    d.innerHTML = `<input type="text" class="biezace-name-input" value="${esc(row.name)}" placeholder="nazwa…" oninput="updateBiezaceItem(${i},'name',this.value)" style="flex:1;color:var(--muted);font-size:13px;font-family:inherit;background:transparent;border:none;border-bottom:1px solid transparent;padding:0 2px;width:100%;"/><input type="text" class="biezace-amount-input" value="${esc(row.amount)}" placeholder="kwota" oninput="updateBiezaceItem(${i},'amount',this.value)" style="font-size:13px;font-weight:600;text-align:right;width:110px;color:var(--text);font-family:inherit;background:transparent;border:none;border-bottom:1px solid transparent;padding:0 2px;"/><button class="biezace-del" onclick="delBiezaceItem(${i})">×</button>`;
+    cont.appendChild(d);
+  });
+  recalcBiezaceZost();
+}
+
+function renderMonthContent() {
+  const cont = document.getElementById('monthContent');
+  const month = (state.months||[]).find(m => m.id===state.activeMonth);
+  if (!month || state.activeMonth==='__biezace__') { cont.innerHTML=''; return; }
+  const mi = state.months.findIndex(m => m.id===state.activeMonth);
+
+  let html = `<div class="month-header">
+    <h3>${month.label}</h3>
+    <span class="month-badge">2026</span>
+  </div><div class="month-body">`;
+
+  (month.sections||[]).forEach((sec, si) => {
+    // sub1/sub2 are editable bold black subsection labels
+    const sub1 = sec.sub1 !== undefined ? sec.sub1 : '';
+    const sub2 = sec.sub2 !== undefined ? sec.sub2 : '';
+
+    html += `
+    <div class="section">
+      <div class="section-title-row">
+        <div class="section-title" style="cursor:pointer;flex-shrink:0;" onclick="editSection(${mi},${si})" title="Kliknij aby zmienić nazwę">${esc(sec.title)}</div>
+        <input type="text" class="subsec-input" value="${esc(sub1)}" placeholder="podsekcja…" oninput="updateSectionSub(${mi},${si},'sub1',this.value)" style="margin-left:auto;max-width:200px;" />
+        <input type="text" class="subsec-input" value="${esc(sub2)}" placeholder="podsekcja…" oninput="updateSectionSub(${mi},${si},'sub2',this.value)" style="max-width:200px;" />
+        <button class="section-del-btn" onclick="delSection(${mi},${si})" title="Usuń sekcję">×</button>
+      </div>`;
+
+    (sec.items||[]).forEach((item, ii) => {
+      html += `<div class="item-row">
+        <div class="item-name${item.bold?' bold':''}">
+          <input type="text" value="${esc(item.name)}" oninput="updateItem(${mi},${si},${ii},'name',this.value)" placeholder="nazwa…"/>
+        </div>
+        <div class="item-amount">
+          <input type="text" value="${esc(item.amount)}" oninput="updateItem(${mi},${si},${ii},'amount',this.value)" placeholder="kwota"/>
+        </div>
+        <button class="row-del-btn" onclick="delItem(${mi},${si},${ii})">×</button>
+      </div>`;
+    });
+
+    // Sum row for CZYNSZ sections
+    const secSum = (sec.items||[]).reduce((acc,item) => {
+      return acc + (parseFloat((item.amount||'').replace(/\s/g,'').replace(',','.')) || 0);
+    }, 0);
+    const showSum = sec.title === 'CZYNSZ' || sec.sumEnabled;
+    if (showSum) {
+      html += `<div class="section-sum-row">
+        <span class="section-sum-label">SUMA</span>
+        <span class="section-sum-value">${Math.round(secSum).toLocaleString('pl-PL')} zł</span>
+      </div>`;
+    }
+
+    html += `
+      <button class="add-item-btn" onclick="addItem(${mi},${si})">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        dodaj wiersz
+      </button>
+    </div>`;
+  });
+
+  // Przyciski na dole: dodaj sekcję + regis bar
+  html += `
+    <div class="add-section-wrap">
+      <div class="add-section-label">Dodaj sekcję:</div>
+      <div class="add-section-presets">
+        ${['PENSJE','CZYNSZ','BIEŻĄCE','PODATKI','REGIS/CF','REZERWY'].map(t =>
+          `<button class="preset-btn" onclick="addSection(${mi},'${t}')">${t}</button>`
+        ).join('')}
+        <button class="preset-btn preset-custom" onclick="addSectionCustom(${mi})">+ własna…</button>
+      </div>
+    </div>
+  </div>`;
+
+  cont.innerHTML = html;
+}
+
+window.updateKosztItem = (i,f,v) => { pushHistory(); if(!state.kosztItems) state.kosztItems=[]; state.kosztItems[i][f]=v; recalcKosztZost(); scheduleSave(); };
+window.addKosztItem = () => { pushHistory(); if(!state.kosztItems) state.kosztItems=[]; state.kosztItems.push({id:Date.now(),name:'',amount:''}); renderKoszty(); scheduleSave(); const inp=document.querySelectorAll('#kosztItems input'); if(inp.length) inp[inp.length-2].focus(); };
+window.delKosztItem = (i) => { pushHistory(); state.kosztItems.splice(i,1); renderKoszty(); scheduleSave(); };
+
+window.updateSectionSub = (mi,si,field,val) => { pushHistory(); state.months[mi].sections[si][field]=val; scheduleSave(); };
+
+window.addItem = (mi, si) => {
+  pushHistory();
+  state.months[mi].sections[si].items.push({ name: '', amount: '' });
+  renderMonthContent();
+  scheduleSave();
+  // focus last name input in section
+  setTimeout(() => {
+    const rows = document.querySelectorAll('.item-row');
+    if (rows.length) {
+      const last = rows[rows.length - 1].querySelector('input');
+      if (last) last.focus();
+    }
+  }, 30);
+};
+
+window.addSection = (mi, title) => {
+  pushHistory();
+  state.months[mi].sections.push({ title, items: [] });
+  renderMonthContent();
+  scheduleSave();
+};
+
+window.addSectionCustom = (mi) => {
+  openModal('Nazwa nowej sekcji', '', (val) => {
+    pushHistory();
+    state.months[mi].sections.push({ title: val.toUpperCase(), items: [] });
+    renderMonthContent();
+    scheduleSave();
+  });
+};
+
+window.editSection = (mi, si) => {
+  openModal('Zmień nazwę sekcji', state.months[mi].sections[si].title, (val) => {
+    pushHistory();
+    state.months[mi].sections[si].title = val.toUpperCase();
+    renderMonthContent();
+    scheduleSave();
+  });
+};
+
+window.delSection = (mi, si) => {
+  const sec = state.months[mi].sections[si];
+  if (sec.items.length > 0) {
+    if (!confirm(`Usunąć sekcję "${sec.title}" z ${sec.items.length} wierszami?`)) return;
+  }
+  pushHistory();
+  state.months[mi].sections.splice(si, 1);
+  renderMonthContent();
+  scheduleSave();
+};
+
+// ── MONTH MANAGEMENT ──
+let modalCallback = null;
+function openModal(title, value, cb) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalInput').value = value;
+  document.getElementById('monthModal').classList.add('open');
+  modalCallback = cb;
+  setTimeout(() => { const inp = document.getElementById('modalInput'); inp.focus(); inp.select(); }, 50);
+}
+window.closeModal = () => {
+  document.getElementById('monthModal').classList.remove('open');
+  modalCallback = null;
+};
+window.confirmModal = () => {
+  const val = document.getElementById('modalInput').value.trim();
+  if (val && modalCallback) modalCallback(val);
+  closeModal();
+};
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('monthModal').classList.contains('open')) {
+    e.preventDefault(); confirmModal();
+  }
+  if (e.key === 'Escape' && document.getElementById('monthModal').classList.contains('open')) {
+    closeModal();
+  }
+});
+
+window.editMonth = (mi, e) => {
+  e.stopPropagation();
+  const m = state.months[mi];
+  openModal('Zmień nazwę miesiąca', m.label, (val) => {
+    pushHistory();
+    state.months[mi].label = val.toUpperCase();
+    renderMonthsNav();
+    scheduleSave();
+  });
+};
+window.deleteMonth = (mi, e) => {
+  e.stopPropagation();
+  const m = state.months[mi];
+  if (!confirm(`Usunąć miesiąc "${m.label}"? Wszystkie dane zostaną utracone.`)) return;
+  pushHistory();
+  if (state.activeMonth === m.id) state.activeMonth = state.months[0]?.id || '__biezace__';
+  state.months.splice(mi, 1);
+  render();
+  scheduleSave();
+};
+window.addMonth = () => {
+  openModal('Nowy miesiąc — wpisz nazwę', '', (val) => {
+    pushHistory();
+    const id = 'month_' + Date.now();
+    state.months.push({
+      id, label: val.toUpperCase(),
+      sections: [
+        { title: 'Pensje', items: [] },
+        { title: 'CZYNSZ', items: [] },
+        { title: 'Bieżące', items: [] },
+        { title: 'Podatki', items: [] },
+        { title: 'Regis / CF', items: [] },
+        { title: 'Rezerwy', items: [] },
+      ],
+      regis: { plan: '', jest: '' }
+    });
+    state.activeMonth = id;
+    render();
+    scheduleSave();
+  });
+};
+window.updateRezerwa = (val) => {
+  state.rezerwa = val;
+  scheduleSave();
+};
+
+window.updateSubRow = (i,f,v) => { pushHistory(); state.subRows[i][f]=v; recalc(); scheduleSave(); };
+window.addSubRow = () => { pushHistory(); state.subRows.push({id:Date.now(),amount:'',note:''}); renderSubRows(); scheduleSave(); const inp=document.querySelectorAll('#subAmounts .amount-input'); if(inp.length) inp[inp.length-1].focus(); };
+window.delSubRow = (i) => { pushHistory(); state.subRows.splice(i,1); renderSubRows(); recalc(); scheduleSave(); };
+window.setActiveMonth = (id) => { state.activeMonth=id; renderMonthsNav(); renderBiezace(); renderMonthContent(); scheduleSave(); };
+window.updateItem = (mi,si,ii,f,v) => { pushHistory(); state.months[mi].sections[si].items[ii][f]=v; scheduleSave(); };
+window.delItem = (mi,si,ii) => { pushHistory(); state.months[mi].sections[si].items.splice(ii,1); renderMonthContent(); scheduleSave(); };
+window.updateRegis = (mi,f,v) => { pushHistory(); if(!state.months[mi].regis) state.months[mi].regis={}; state.months[mi].regis[f]=v; scheduleSave(); };
+window.updateBiezaceItem = (i,f,v) => { pushHistory(); state.biezaceItems[i][f]=v; recalcBiezaceZost(); scheduleSave(); };
+window.addBiezaceItem = () => { pushHistory(); state.biezaceItems.push({id:Date.now(),name:'',amount:''}); renderBiezace(); scheduleSave(); };
+window.delBiezaceItem = (i) => { pushHistory(); state.biezaceItems.splice(i,1); renderBiezace(); scheduleSave(); };
+
+// ── FIREBASE LISTENER ──
 onSnapshot(DOC, (snap) => {
   if (snap.exists()) {
     state = snap.data();
-    render();
-    setSyncStatus('ok');
   } else {
-    // First run — write defaults
-    setDoc(DOC, state).then(() => { render(); setSyncStatus('ok'); });
+    setDoc(DOC, state);
   }
+  render();
+  setSyncStatus('ok');
   if (!isLoaded) {
     isLoaded = true;
-    setTimeout(() => document.getElementById('loading').classList.add('hidden'), 400);
+    setTimeout(() => document.getElementById('loading').classList.add('hidden'), 300);
   }
 }, (err) => {
   console.error(err);
@@ -1097,17 +995,13 @@ onSnapshot(DOC, (snap) => {
   }
 });
 
-// Initial render
 render();
 updateUndoButtons();
 </script>
 
-<!-- Service Worker registration -->
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  });
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 </script>
 </body>

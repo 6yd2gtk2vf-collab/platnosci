@@ -1,8 +1,9 @@
 {
-  "name": "iKropka Płatności",
-  "short_name": "iK Płatności",
+  "name": "IKR Finanse",
+  "short_name": "IKR Finanse",
   "description": "Panel finansowy IKropka",
-  "start_url": "/",
+  "start_url": "/platnosci/",
+  "scope": "/platnosci/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#c0272d",
@@ -21,5 +22,8 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["finance", "productivity"]
+  "categories": [
+    "finance",
+    "productivity"
+  ]
 }
