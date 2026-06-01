@@ -323,6 +323,7 @@ input[type="text"]:hover { border-bottom-color: var(--red-mid); }
 </div>
 <div class="toast" id="toast"></div>
 
+<div id="appContent" style="display:none;">
 <div class="topbar">
   <div class="logo-wrap">
     <div class="logo-dot"><span>iK</span></div>
@@ -413,6 +414,7 @@ input[type="text"]:hover { border-bottom-color: var(--red-mid); }
   </div>
   <div class="month-content" id="monthContent"></div>
 </div>
+</div><!-- /appContent -->
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -1184,6 +1186,7 @@ function checkPin() {
     // Correct
     pinUnlocked = true;
     document.getElementById('pinScreen').classList.add('hidden');
+    document.getElementById('appContent').style.display = '';
   } else {
     // Wrong
     for (let i = 0; i < 4; i++) {
